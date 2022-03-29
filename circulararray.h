@@ -34,8 +34,7 @@ public:
 
     string to_string(string sep=" ");
 
-    // agregado
-    void resize();
+
 private:
     int next(int);
     int prev(int);
@@ -103,6 +102,14 @@ bool CircularArray<T> :: is_full(){
     }
 }   /*
         evalua que capacity sea igual al valor de size()
+    */
+
+template<typename T>
+void CircularArray<T> :: clear(){
+    front = -1;
+    back = -1;
+}   /*
+        Vuelvo a las posiciones inciales el front y el back
     */
 
 template<typename T>
@@ -190,73 +197,27 @@ T CircularArray<T> :: pop_back(){
 
 }
 
-template<typename T>
-T CircularArray<T> :: pop_front(){
-
-}
 
 
-
-template<typename T>
-void CircularArray<T> :: push_back(T data){
-
-    if(back == -1 || front == -1){
-        back = 0; front = 0;
-        array[0] = data;
-
-    }else{
-        if(is_full())
-            resize();
-
-        array[next(back)] = data;
-        back = next(back);
-    }
-}
 
 template<typename T>
 T CircularArray<T>:: pop_front(){
     T res = array[front];
 
-    if( front == back){
-        front == -1;
-        back == -1;
-    }else{
+    if( front == back)
+        clear();
+    else
         front = next(front);
-    }
-
-    return res;
-}
-
-template<typename T>
-void CircularArray<T> :: resize(){
-    int* new_arr = new T[capacity * 2];
-    int x = 0;
-    //asignando los valores anteriores
-
-    while (true){
-        new_arr[x] = array[front];
-        front = next(front);
-        ++x;
-
-        if(front == back)
-            break;
-    }
-
-    //eliminando el array anterior
-    delete [] array;
     
-    //reasignando los valores
-    capacity = capacity*2;
-    array = new_arr;
-    front = 0;
-    back = x;
-}
+    return res;
+}   /*
+        Si verifico que el array tiene un solo elemento limpio el array, sino solo muevo el front a la siguiente posicion.
+    
+    */
 
-template<typename T>
-void CircularArray<T> :: clear(){
-    front = -1;
-    back = -1;
-}
+
+
+
 
 template<typename T>
 void CircularArray<T> :: sort(){
@@ -279,4 +240,7 @@ void CircularArray<T> :: sort(){
     back = x;
 
     std::sort(array + front, array + back);
-}
+}   /*
+        Reubico los datos del array para posteriormente aplicar el algoritmo de ordenamiento. Para ello utilizo el mismo algoritmo del resize, con la diferencia
+        que ahora no aumento la capacidad del array.
+    */
