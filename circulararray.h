@@ -1,21 +1,22 @@
 #include <iostream>
+#include <string>
+#include <stdlib.h>
 #include <algorithm>
+#include <vector>
+
 using namespace std;
 
 template <class T>
-class CircularArray
-{
+class CircularArray{
 private:
     T *array;
     int capacity;
     int back, front;
-    
+
 public:
     CircularArray();
     CircularArray(int _capacity);
     virtual ~CircularArray();
-
-
     void push_front(T data);
     void push_back(T data);
     void insert(T data, int pos);
@@ -24,15 +25,15 @@ public:
     bool is_full();
     bool is_empty();
     int size();
-    void clear(); 
-    T &operator[](int);
+    void clear();
+    T &operator[](int); //
     void sort();
     bool is_sorted();
     void reverse();
-
-    void resize();
-
     string to_string(string sep=" ");
+
+    // agregado
+    void resize();
 
 private:
     int next(int);
@@ -84,10 +85,12 @@ string CircularArray<T>::to_string(string sep){
 
 template<typename T>
 bool CircularArray<T> :: is_empty(){
-    if(front==-1 && back==-1)
+    if(front==-1 && back==-1){
         return true;
-    else
-      return false;
+    }
+    else{
+        return false;
+    }
 }   /*
         evalua si front y back valen -1 (valores iniciales en el constructor)
     */
@@ -109,7 +112,7 @@ void CircularArray<T> :: clear(){
     front = -1;
     back = -1;
 }   /*
-        Vuelvo a las posiciones inciales el front y el back
+        Vuelvo a las posiciones inciales el front y el back (-1)
     */
 
 template<typename T>
@@ -119,14 +122,11 @@ void CircularArray<T> :: resize(){
     int index = 0;
     while(true){
         new_arr[index] = array[front];
-
         if(front == back){
             break;
         }
-      
         front = next(front);
         index++;
-       
     }
 
     delete [] array;
@@ -164,7 +164,7 @@ void CircularArray<T> :: push_back(T data){
 
 template<typename T>
 void CircularArray<T> :: push_front(T data){
-    if(front==-1 && back==-1){
+    if(is_empty()){
         back = front = 0;
         array[0] = data;
     }
@@ -195,23 +195,33 @@ int CircularArray<T> :: size(){
         va del n_front (front) al back mediante "next" (== ir del back al front mediante "prev") para con un contador inicializado en 1 contar la cantidad de datos que existentes
     */
 
-
+template<typename T>
+T CircularArray<T> :: pop_back(){
+    T retorno = array[back];
+    if(front==back){
+        clear();
+    }
+    else{
+        back = prev(front);
+    }
+    return retorno;
+}   /*
+        verifico si el circulararray tiene un solo elemento para hacer un "clean", si tiene mas de un elemento muevo el back (next)
+    */
 
 template<typename T>
-T CircularArray<T>:: pop_front(){
-    T res = array[front];
-
-    if( front == back)
+T CircularArray<T> :: pop_front(){
+    T retorno = array[front];
+    if(front==back){
         clear();
-    else
+    }
+    else{
         front = next(front);
-    
-    return res;
+    }
+    return retorno;
 }   /*
-        Si verifico que el array tiene un solo elemento limpio el array, sino solo muevo el front a la siguiente posicion.
-    
-*/
-
+        verifico si el circulararray tiene un solo elemento para hacer un "clean", si tiene mas de un elemento muevo el front (prev)
+    */
 
 template<typename T>
 void CircularArray<T> :: sort(){
@@ -220,10 +230,9 @@ void CircularArray<T> :: sort(){
 
     while (true){
         new_arr[x] = array[front];
-
-        if(front == back)
+        if(front == back){
             break;
-    
+        }
         front = next(front);
         ++x;
     }
@@ -233,14 +242,66 @@ void CircularArray<T> :: sort(){
     array = new_arr;
     front = 0;
     back = x;
-  
     std::sort(array + front, array + back + 1);
 }   /*
         Reubico los datos del array para posteriormente aplicar el algoritmo de ordenamiento. Para ello utilizo el mismo algoritmo del resize, con la diferencia
         que ahora no aumento la capacidad del array.
     */
 
+template<typename T>
+bool CircularArray<T> :: is_sorted(){
+    bool retorno = true;
+    int n_front = front;
+    while(true){
+        if(front==back || next(n_front)==back){
+            break;
+        }
+        if(array[n_front] > array[next(n_front)]){
+            retorno = false;
+            break;
+        }
+        n_front = next(n_front);
+    }
+    return retorno;
+}   /*
+        1 - vector con 1 solo elemento == ordenado
+        2 - evalua arr[front] < arr[front+1] < ... < arr[back]
+    */
 
+template<typename T>
+void CircularArray<T> :: insert(T data, int pos){
+    int n_front = prev(front);
+    bool boolInsert = true;
+    while(true){
+        if(pos==n_front){
+            cout << "ERROR : invalid position" << endl;
+            boolInsert = false;
+            break;
+        }
+        if(prev(n_front)==back){
+            break;
+        }
+        n_front = prev(n_front);
+    }
+    if(boolInsert){
+        if(is_full()){
+            resize();
+        }
+        back = next(back);
+        int n_back = back;
+        while(true){
+            arr[n_back] = arr[prev(n_back)];
+            n_back = prev(n_back);
+            if(n_back==pos){
+                arr[pos] == data;
+                break;
+            }
+        }
+    }
+}   /*
+        1 - evalua si pos esta en la zona "basura"
+        2 - si pos esta dentro de la zona valida empuja un espacio al back ( resize si fuese necesario)
+    */
 
 template<typename T>
 void CircularArray<T> :: reverse(){
@@ -249,7 +310,7 @@ void CircularArray<T> :: reverse(){
 
     while (abs(temp_back - temp_front) > 1){
         T temporal = array[temp_front];
-        
+
         array[temp_front] = array[temp_back];
         array[temp_back] = temporal;
 
@@ -257,7 +318,7 @@ void CircularArray<T> :: reverse(){
         temp_front = next(temp_front);
     }
 }   /*
-      
+
     Intercambio las posiciones de los valores extremos del array circular(front y back), siempre y cuando la diferencia entre front y back sea mayor a 1.
     */
 
