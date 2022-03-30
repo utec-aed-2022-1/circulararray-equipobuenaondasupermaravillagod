@@ -195,10 +195,6 @@ int CircularArray<T> :: size(){
         va del n_front (front) al back mediante "next" (== ir del back al front mediante "prev") para con un contador inicializado en 1 contar la cantidad de datos que existentes
     */
 
-template<typename T>
-T CircularArray<T> :: pop_back(){
-
-}
 
 
 template<typename T>
@@ -237,10 +233,6 @@ void CircularArray<T> :: sort(){
     array = new_arr;
     front = 0;
     back = x;
-
-    cout << "antes de ordenar" << endl;
-
-    imprimir();
   
     std::sort(array + front, array + back + 1);
 }   /*
@@ -268,3 +260,27 @@ void CircularArray<T> :: reverse(){
       
     Intercambio las posiciones de los valores extremos del array circular(front y back), siempre y cuando la diferencia entre front y back sea mayor a 1.
     */
+
+template<typename T>
+T & CircularArray<T> :: operator[](int x){
+  //Manejo de exepciones
+  int prohibido = prev(front);
+  try{
+    while (prohibido != back){
+      if(prohibido == x){
+        //"error"
+          throw "No se puede acceder a esa posicion";
+      }
+      prohibido = prev(prohibido);
+    }
+  
+
+  }catch(const char* error){
+    cout << "error: " << error << endl;
+  }
+
+  return array[x];
+} /*
+    Si la posicion a la que se desea acceder se encuentra en al zona restringida me devolvera una excepcion.
+  */
+
