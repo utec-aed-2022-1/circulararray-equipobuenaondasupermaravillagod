@@ -1,8 +1,11 @@
+
+#ifndef CIRCULARARRAY_H
+#define CIRCULARARRAY_H
+
 #include <iostream>
 #include <string>
 #include <stdlib.h>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 
@@ -34,6 +37,9 @@ public:
 
     // agregado
     void resize();
+    void imprimir();
+    T get_front();
+    T get_back();
 
 private:
     int next(int);
@@ -49,6 +55,7 @@ CircularArray<T>::CircularArray(){
 
 template <class T>
 CircularArray<T>::CircularArray(int _capacity){
+    _capacity = (_capacity == 0) ? 1 : _capacity;
     this->array = new T[_capacity];
     this->capacity = _capacity;
     this->front = this->back = -1;
@@ -81,6 +88,29 @@ string CircularArray<T>::to_string(string sep){
     return result;
 }
 
+template<typename T>
+void CircularArray<T>:: imprimir(){
+        auto i = front;
+  
+        while (true){
+          cout << array[i] << " ";
+          if(i == back)
+            break;
+
+          i = next(i);
+        }
+        cout << endl;
+}
+
+template<typename T>
+T CircularArray<T>:: get_front(){
+  return array[front];
+}
+
+template<typename T>
+T CircularArray<T>:: get_back(){
+  return array[back];
+}
 // fernando - juan
 
 template<typename T>
@@ -290,10 +320,10 @@ void CircularArray<T> :: insert(T data, int pos){
         back = next(back);
         int n_back = back;
         while(true){
-            arr[n_back] = arr[prev(n_back)];
+            array[n_back] = array[prev(n_back)];
             n_back = prev(n_back);
             if(n_back==pos){
-                arr[pos] == data;
+                array[pos] == data;
                 break;
             }
         }
@@ -345,3 +375,4 @@ T & CircularArray<T> :: operator[](int x){
     Si la posicion a la que se desea acceder se encuentra en al zona restringida me devolvera una excepcion.
   */
 
+#endif //CIRCULARARRAY_H
